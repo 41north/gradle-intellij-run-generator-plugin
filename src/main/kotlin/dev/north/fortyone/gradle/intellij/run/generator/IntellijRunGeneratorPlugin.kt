@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package dev.north.fortyone.gradle.intellj.run.generator
+package dev.north.fortyone.gradle.intellij.run.generator
 
-import dev.north.fortyone.gradle.intellj.run.generator.tasks.IntellijRunConfiguratorTask
+import dev.north.fortyone.gradle.intellij.run.generator.tasks.IntellijRunConfiguratorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
@@ -26,13 +26,14 @@ class IntellijRunGeneratorPlugin : Plugin<Project> {
 
   companion object {
     const val NAME = "intellij-run-generator"
+    const val TASK_NAME = "generateIntellijRunConfigs"
   }
 
   override fun apply(target: Project) {
     val extension = target.extensions.create<IntellijRunGeneratorExtension>(NAME)
-    target.registerTask<IntellijRunConfiguratorTask>("generateIntellijRunConfigs") {
-      tasksDefinitions = extension.taskDefinitionInputFile.get()
-      taskDefinitionsOutput = extension.taskDefinitionOutputDir.get()
+    target.registerTask<IntellijRunConfiguratorTask>(TASK_NAME) {
+      tasksDefinitionsFile = extension.tasksDefinitionsFile.get()
+      taskDefinitionsOutput = extension.tasksDefinitionOutputDir.get()
     }
   }
 }

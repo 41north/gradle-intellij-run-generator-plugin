@@ -1,4 +1,4 @@
-package dev.north.fortyone.gradle.intellj.run.generator.tasks
+package dev.north.fortyone.gradle.intellij.run.generator.tasks
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -20,7 +20,7 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
   private val jackson = ObjectMapper(YAMLFactory()).registerModule(KotlinModule())
 
   @InputFile
-  lateinit var tasksDefinitions: File
+  lateinit var tasksDefinitionsFile: File
 
   @OutputDirectory
   lateinit var taskDefinitionsOutput: File
@@ -34,8 +34,8 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
   fun run() {
     val runConfigurationDir = taskDefinitionsOutput.apply { if (!exists()) mkdirs() }
 
-    val td = jackson.readValue(tasksDefinitions, TasksDefinitions::class.java)
-      ?: throw InvalidParameterException("Task definition file not valid!")
+    val td = jackson.readValue(tasksDefinitionsFile, TasksDefinitions::class.java)
+      ?: throw InvalidParameterException("Task definition file ${tasksDefinitionsFile.absolutePath} not found or not valid!")
 
     val configs: List<IntellijRunConfig> = td.application + td.docker + td.gradle
 

@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package dev.north.fortyone.gradle.intellj.run.generator
+package dev.north.fortyone.gradle.intellij.run.generator
 
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import java.io.File
+import org.gradle.api.tasks.TaskProvider
 
-/**
- * Extension class for configuring [IntellijRunGeneratorPlugin].
- */
-@Suppress("UnstableApiUsage")
-open class IntellijRunGeneratorExtension internal constructor(
-  objectFactory: ObjectFactory
-) {
+inline fun <reified T> ObjectFactory.property(configuration: Property<T>.() -> Unit = {}) =
+  property(T::class.java).apply(configuration)
 
-  /**
-   * Task definition file for generating Run configs.
-   */
-  val taskDefinitionInputFile: Property<File> = objectFactory.property { set(File("intellij-run-configs.yaml")) }
-
-  /**
-   * Output directory where generated Run configs are going to be stored.
-   */
-  val taskDefinitionOutputDir: Property<File> = objectFactory.property { set(File(".idea/runConfigurations")) }
-}
+inline fun <reified T : Task> Project.registerTask(
+  name: String,
+  noinline configuration: T.() -> Unit
+): TaskProvider<T> = this.tasks.register(name, T::class.java, configuration)
