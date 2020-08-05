@@ -1,8 +1,8 @@
 <h1 align="center">✨ Gradle Intellij Run Generator Plugin ✨</h1>
 
 <p align="center">
-  <a href="https://github.com/41north/gradle-intellij-run-generator-plugin/workflows/KtLint/badge.svg">
-    <img alt="KtLint" height="20px" src="https://github.com/41north/gradle-intellij-run-generator-plugin/workflows/KtLint/badge.svg" />
+  <a href="https://github.com/41north/gradle-intellij-run-generator-plugin/workflows/build/badge.svg">
+    <img alt="KtLint" height="20px" src="https://github.com/41north/gradle-intellij-run-generator-plugin/workflows/build/badge.svg" />
   </a>
   <a href="https://github.com/41north/gradle-intellij-run-generator-plugin?style=flat-square">
     <img alt="Gradle Plugin License" height="20px" src="https://img.shields.io/github/license/41north/gradle-intellij-run-generator-plugin?style=flat-square" />
