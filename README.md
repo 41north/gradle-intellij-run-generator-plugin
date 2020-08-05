@@ -21,13 +21,19 @@ This plugin was developed originally for [Exflo](https://github.com/41north/exfl
 
 To apply the plugin, use the gradle plugin syntax:
 
-```groovy
+```kotlin
 plugins {
-    id("dev.north.fortyone.intellij.run.generator") version "0.1.0"
+  id("dev.north.fortyone.intellij.run.generator") version "0.1.0"
 }
 ```
 
 Once the plugin is applied, you can configure it with the following options (default values are displayed below):
+
+```kotlin
+`intellij-run-generator` {
+  
+}
+```
 
 ## 💻 Contribute
 

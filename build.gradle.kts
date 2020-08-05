@@ -19,7 +19,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   `java-gradle-plugin`
   `kotlin-dsl`
-  `maven-publish`
   id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
   id("org.jlleitschuh.gradle.ktlint-idea") version "9.3.0"
   id("io.spring.dependency-management") version "1.0.9.RELEASE"
@@ -30,6 +29,10 @@ plugins {
 apply(plugin = "io.spring.dependency-management")
 apply(from = "${project.rootDir}/gradle/versions.gradle")
 
+kotlinDslPluginOptions {
+  experimentalWarning.set(false)
+}
+
 group = "dev.north.fortyone.gradle"
 version = "0.1.0"
 
@@ -39,7 +42,7 @@ repositories {
 
 gradlePlugin {
   (plugins) {
-    register("IntellijRunGeneratorPlugin") {
+    register("intellijRunGeneratorPlugin") {
       id = "dev.north.fortyone.intellij.run.generator"
       displayName = "Gradle Intellij Run Generator"
       description = "Generates XML Run configurations files for Intellij with YAML"
@@ -54,28 +57,25 @@ pluginBundle {
   tags = listOf("intellij", "generator", "kotlin-dsl")
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions.jvmTarget = "11"
+tasks {
+  withType<KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "11"
+  }
+
+  withType<Test> {
+    useJUnitPlatform()
+  }
 }
 
 dependencies {
-  gradleApi()
-
   implementation("org.redundent:kotlin-xml-builder")
   implementation("com.fasterxml.jackson.core:jackson-databind")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-
   implementation("javax.xml.bind:jaxb-api")
   implementation("com.sun.xml.bind:jaxb-core")
 
   testImplementation("io.kotest:kotest-runner-junit5-jvm")
   testImplementation("io.kotest:kotest-runner-console-jvm")
   testImplementation("io.kotest:kotest-assertions-core-jvm")
-}
-
-publishing {
-  repositories {
-    maven(url = "build/repository")
-  }
 }

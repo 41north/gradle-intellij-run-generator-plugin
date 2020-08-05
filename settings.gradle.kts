@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+rootProject.name = "gradle-intellij-run-generator-plugin"
+
 pluginManagement {
 
   repositories {

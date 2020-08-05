@@ -38,7 +38,6 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
       ?: throw InvalidParameterException("Task definition file ${tasksDefinitionsFile.absolutePath} not found or not valid!")
 
     val configs: List<IntellijRunConfig> = td.application + td.docker + td.gradle
-
     configs
       .forEach { config ->
         val xml = config.toXml()
@@ -48,9 +47,9 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
 }
 
 data class TasksDefinitions(
-  val application: List<ApplicationIntellijRunConfig>,
-  val docker: List<DockerIntellijRunConfig>,
-  val gradle: List<GradleIntellijRunConfig>
+  val application: List<ApplicationIntellijRunConfig> = emptyList(),
+  val docker: List<DockerIntellijRunConfig> = emptyList(),
+  val gradle: List<GradleIntellijRunConfig> = emptyList()
 )
 
 interface IntellijRunConfig {
