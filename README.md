@@ -31,9 +31,12 @@ Once the plugin is applied, you can configure it with the following options (def
 
 ```kotlin
 `intellij-run-generator` {
-  
+  tasksDefinitionsFile.set(File("./intellij-run-configs.yaml"))
+  tasksDefinitionOutputDir.set(File(".idea/runConfigurations"))
 }
 ```
+
+If you want to see how the definition file looks like, there's one example taken from Exflo inside [`samples/intellij-run-configs.yaml`](samples/intellij-run-configs.yaml).
 
 ## 💻 Contribute
 
