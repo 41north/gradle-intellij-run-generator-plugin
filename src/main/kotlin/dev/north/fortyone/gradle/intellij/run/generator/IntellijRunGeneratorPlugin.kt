@@ -19,7 +19,10 @@ package dev.north.fortyone.gradle.intellij.run.generator
 import dev.north.fortyone.gradle.intellij.run.generator.tasks.IntellijRunConfiguratorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.create
+import java.io.File
 
 @Suppress("UnstableApiUsage", "MemberVisibilityCanBePrivate")
 class IntellijRunGeneratorPlugin : Plugin<Project> {
@@ -36,4 +39,23 @@ class IntellijRunGeneratorPlugin : Plugin<Project> {
       taskDefinitionsOutput = extension.tasksDefinitionOutputDir.get()
     }
   }
+}
+
+/**
+ * Extension class for configuring [IntellijRunGeneratorPlugin].
+ */
+@Suppress("UnstableApiUsage")
+open class IntellijRunGeneratorExtension internal constructor(
+  objectFactory: ObjectFactory
+) {
+
+  /**
+   * Task definition file for generating Run configs.
+   */
+  val tasksDefinitionsFile: Property<File> = objectFactory.property { set(File("./intellij-run-configs.yaml").absoluteFile) }
+
+  /**
+   * Output directory where generated Run configs are going to be stored.
+   */
+  val tasksDefinitionOutputDir: Property<File> = objectFactory.property { set(File(".idea/runConfigurations").absoluteFile) }
 }

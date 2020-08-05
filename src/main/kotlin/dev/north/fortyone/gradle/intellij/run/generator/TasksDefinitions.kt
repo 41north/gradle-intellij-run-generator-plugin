@@ -1,50 +1,23 @@
-package dev.north.fortyone.gradle.intellij.run.generator.tasks
+/*
+ * Copyright (c) 2020 41North.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+package dev.north.fortyone.gradle.intellij.run.generator
+
 import org.redundent.kotlin.xml.PrintOptions
 import org.redundent.kotlin.xml.xml
-import java.io.File
-import java.security.InvalidParameterException
-
-/**
- * Task that allows to generate XML Run configurations for IntelliJ.
- */
-open class IntellijRunConfiguratorTask : DefaultTask() {
-
-  private val jackson = ObjectMapper(YAMLFactory()).registerModule(KotlinModule())
-
-  @InputFile
-  lateinit var tasksDefinitionsFile: File
-
-  @OutputDirectory
-  lateinit var taskDefinitionsOutput: File
-
-  init {
-    group = "Intellij"
-    description = "Generates XML Run configurations files for Intellij"
-  }
-
-  @TaskAction
-  fun run() {
-    val runConfigurationDir = taskDefinitionsOutput.apply { if (!exists()) mkdirs() }
-
-    val td = jackson.readValue(tasksDefinitionsFile, TasksDefinitions::class.java)
-      ?: throw InvalidParameterException("Task definition file ${tasksDefinitionsFile.absolutePath} not found or not valid!")
-
-    val configs: List<IntellijRunConfig> = td.application + td.docker + td.gradle
-    configs
-      .forEach { config ->
-        val xml = config.toXml()
-        File(runConfigurationDir, config.filename.replace("\\s", "_")).writeText(xml)
-      }
-  }
-}
 
 data class TasksDefinitions(
   val application: List<ApplicationIntellijRunConfig> = emptyList(),
@@ -66,7 +39,8 @@ data class ApplicationIntellijRunConfig(
   override val default: Boolean,
   private val envs: Map<String, String>,
   private val mainClassName: String,
-  private val module: String
+  private val module: String,
+  private val programArguments: String?
 ) : IntellijRunConfig {
 
   override fun toXml(): String =
@@ -98,6 +72,13 @@ data class ApplicationIntellijRunConfig(
         "option" {
           attribute("name", "MAIN_CLASS_NAME")
           attribute("value", mainClassName)
+        }
+
+        programArguments?.let {
+          "option" {
+            attribute("name", "PROGRAM_PARAMETERS")
+            attribute("value", mainClassName)
+          }
         }
 
         "option" {
