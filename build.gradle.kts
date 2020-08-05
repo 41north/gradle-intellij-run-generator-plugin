@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   `java-gradle-plugin`
   `kotlin-dsl`
+  `maven-publish`
   id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
   id("org.jlleitschuh.gradle.ktlint-idea") version "9.3.0"
   id("io.spring.dependency-management") version "1.0.9.RELEASE"
@@ -78,4 +79,10 @@ dependencies {
   testImplementation("io.kotest:kotest-runner-junit5-jvm")
   testImplementation("io.kotest:kotest-runner-console-jvm")
   testImplementation("io.kotest:kotest-assertions-core-jvm")
+}
+
+publishing {
+  repositories {
+    maven(url = "build/repository")
+  }
 }
