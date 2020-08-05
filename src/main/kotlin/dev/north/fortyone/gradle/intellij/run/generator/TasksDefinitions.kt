@@ -36,8 +36,8 @@ interface IntellijRunConfig {
 data class ApplicationIntellijRunConfig(
   override val name: String,
   override val filename: String,
-  override val default: Boolean,
-  private val envs: Map<String, String>,
+  override val default: Boolean = false,
+  private val envs: Map<String, String> = emptyMap(),
   private val mainClassName: String,
   private val module: String,
   private val programArguments: String?
