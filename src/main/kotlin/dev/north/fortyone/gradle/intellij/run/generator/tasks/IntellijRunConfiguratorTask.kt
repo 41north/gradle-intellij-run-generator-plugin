@@ -17,10 +17,8 @@ import java.security.InvalidParameterException
 open class IntellijRunConfiguratorTask : DefaultTask() {
 
   @InputFile
-  var tasksDefinitionsFile: File? = null
-
   @InputDirectory
-  var taskDefinitionsDir: File? = null
+  var tasksDefinitions: File? = null
 
   @OutputDirectory
   var taskDefinitionsOutput: File? = null
@@ -35,29 +33,29 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
 
     // Check if is defined
     if (taskDefinitionsOutput == null)
-      throw IllegalArgumentException("taskDefinitionsOutput path is null! Aborting!")
+      throw IllegalArgumentException("taskDefinitionsOutput is null! Aborting!")
 
     // Ensure output dir exists and create it if necessary
     val outputDir = taskDefinitionsOutput!!.apply { if (!exists()) mkdirs() }
 
     // Ensure at least we have a definition file or a definition dir
-    if (tasksDefinitionsFile == null && taskDefinitionsDir == null)
-      throw IllegalArgumentException("TaskDefinitionsFile AND TaskDefinitionsDir are both null! Aborting!")
+    if (tasksDefinitions == null)
+      throw IllegalArgumentException("tasksDefinitionsFile is null! Aborting!")
 
     // Ensure we comply with requirements
     when {
-      tasksDefinitionsFile != null -> {
+      tasksDefinitions!!.isFile -> {
 
         // If doesn't exist, throw error
-        if (!tasksDefinitionsFile!!.exists())
-          throw InvalidParameterException("File with path ${tasksDefinitionsFile!!.absolutePath} not found!")
+        if (!tasksDefinitions!!.exists())
+          throw InvalidParameterException("File with path ${tasksDefinitions!!.absolutePath} not found!")
 
         // If is not file throw error
-        if (!tasksDefinitionsFile!!.isFile)
-          throw InvalidParameterException("Task definition file ${tasksDefinitionsFile!!.absolutePath} is not a file!")
+        if (!tasksDefinitions!!.isFile)
+          throw InvalidParameterException("Task definition file ${tasksDefinitions!!.absolutePath} is not a file!")
 
         // Proceed to parse
-        val isr = tasksDefinitionsFile!!.inputStream()
+        val isr = tasksDefinitions!!.inputStream()
         val definitions = YAML().loadAll(isr).iterator()
 
         // Write definitions
@@ -68,21 +66,21 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
           }
       }
 
-      taskDefinitionsDir != null -> {
+      tasksDefinitions!!.isDirectory -> {
 
         // If doesn't exist, throw error
-        if (!taskDefinitionsDir!!.exists())
-          throw InvalidParameterException("Folder with path ${taskDefinitionsDir!!.absolutePath} not found!")
+        if (!tasksDefinitions!!.exists())
+          throw InvalidParameterException("Folder with path ${tasksDefinitions!!.absolutePath} not found!")
 
         // If is a file throw error
-        if (taskDefinitionsDir!!.isFile)
-          throw InvalidParameterException("${taskDefinitionsDir!!.absolutePath} is a file instead of a folder!")
+        if (tasksDefinitions!!.isFile)
+          throw InvalidParameterException("${tasksDefinitions!!.absolutePath} is a file instead of a folder!")
 
         // Obtain files
-        val files = taskDefinitionsDir!!.listFiles()
+        val files = tasksDefinitions!!.listFiles()
 
-        if (files.isEmpty())
-          throw IllegalStateException("${taskDefinitionsDir!!.absolutePath} is empty!")
+        if (files == null || files.isEmpty())
+          throw IllegalStateException("${tasksDefinitions!!.absolutePath} is empty!")
 
         // Iterate through files
         files

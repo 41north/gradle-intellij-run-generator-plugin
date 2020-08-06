@@ -35,9 +35,12 @@ class IntellijRunGeneratorPlugin : Plugin<Project> {
     val extension = target.extensions.create<IntellijRunGeneratorExtension>(NAME)
 
     target.registerTask<IntellijRunConfiguratorTask>(TASK_NAME) {
-      tasksDefinitionsFile = extension.tasksDefinitionsFile.orNull
-      taskDefinitionsDir = extension.taskDefinitionsDir.orNull
-      taskDefinitionsOutput = extension.tasksDefinitionOutputDir.orNull
+      tasksDefinitions = extension
+        .tasksDefinitions
+        .getOrElse(File(target.rootDir, "intellij-run-configs.yaml"))
+      taskDefinitionsOutput = extension
+        .tasksDefinitionOutput
+        .getOrElse(File(target.rootDir, ".idea/runConfigurations"))
     }
   }
 }
@@ -48,17 +51,12 @@ class IntellijRunGeneratorPlugin : Plugin<Project> {
 interface IntellijRunGeneratorExtension {
 
   /**
-   * Task definition file for generating configs.
+   * Task definition file or directory for generating configs.
    */
-  var tasksDefinitionsFile: Property<File>
-
-  /**
-   * Task definition directory for generating configs.
-   */
-  var taskDefinitionsDir: Property<File>
+  var tasksDefinitions: Property<File>
 
   /**
    * Output directory where generated configs are stored.
    */
-  val tasksDefinitionOutputDir: Property<File>
+  val tasksDefinitionOutput: Property<File>
 }
