@@ -1,10 +1,6 @@
 package dev.north.fortyone.gradle.intellij.run.generator.tasks
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import dev.north.fortyone.gradle.intellij.run.generator.IntellijRunConfig
-import dev.north.fortyone.gradle.intellij.run.generator.TasksDefinitions
+import dev.north.fortyone.gradle.intellij.run.generator.YAML
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
@@ -16,8 +12,6 @@ import java.security.InvalidParameterException
  * Task that allows to generate XML Run configurations for IntelliJ.
  */
 open class IntellijRunConfiguratorTask : DefaultTask() {
-
-  private val jackson = ObjectMapper(YAMLFactory()).registerModule(KotlinModule())
 
   @InputFile
   lateinit var tasksDefinitionsFile: File
@@ -32,17 +26,17 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
 
   @TaskAction
   fun run() {
+    // Ensure output dir exists and create it if necessary
     val runConfigurationDir = taskDefinitionsOutput.apply { if (!exists()) mkdirs() }
 
-    val td = jackson.readValue(tasksDefinitionsFile, TasksDefinitions::class.java)
-      ?: throw InvalidParameterException("Task definition file ${tasksDefinitionsFile.absolutePath} not found or not valid!")
+    // Ensure definition file exists
+    if (!tasksDefinitionsFile.exists())
+      throw InvalidParameterException("Run configuration file ${tasksDefinitionsFile.absolutePath} not found!")
 
-    val configs: List<IntellijRunConfig> = td.application + td.docker + td.gradle
-    configs
-      .parallelStream()
-      .forEach { config ->
-        val xml = config.toXml()
-        File(runConfigurationDir, config.filename.replace("\\s", "_")).writeText(xml)
-      }
+    val definitions = YAML().loadAll(tasksDefinitionsFile.inputStream()).iterator()
+//    definitions
+//      .forEach { config ->
+//        File(runConfigurationDir, config.filename.replace("\\s", "_")).writeText(config.toXml())
+//      }
   }
 }

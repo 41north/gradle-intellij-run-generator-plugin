@@ -3,7 +3,6 @@ name: BESU | Dev | Kafka > Run
 filename: BESU__Dev__Kafka__Run.xml
 mainClassName: org.hyperledger.besu.Besu
 module: exflo.ingestion.kafka.main
-default: false
 envs:
   BESU_SYNC_MODE: FULL
   BESU_LOGGING: INFO
@@ -16,16 +15,3 @@ envs:
   BESU_MINER_ENABLED: 'true'
   BESU_MINER_COINBASE: '0xf17f52151EbEF6C7334FAD080c5704D77216b732'
   BESU_PLUGIN_EXFLO_KAFKA_ENABLED: 'true'
-
---- !!dev.north.fortyone.gradle.intellij.run.generator.models.DockerRunConfig
-name: DOCKER | Kafka
-filename: DOCKER__KAFKA.xml
-default: false
-dockerComposeFileName: docker-compose.exflo-kafka.yml
-
---- !!dev.north.fortyone.gradle.intellij.run.generator.models.GradleRunConfig
-name: GRADLE | Ktlint > Format
-filename: GRADLE__Ktlint__Format.xml
-default: false
-tasks:
-  - ktlintFormat

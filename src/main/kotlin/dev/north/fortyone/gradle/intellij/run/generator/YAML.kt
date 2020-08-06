@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-// NOTE Left as Gradle (Groovy) to avoid issues when converting to Kotlin and importing the source.
+package dev.north.fortyone.gradle.intellij.run.generator
 
-dependencyManagement {
-  dependencies {
+import org.yaml.snakeyaml.Yaml
 
-    dependency 'org.redundent:kotlin-xml-builder:1.6.0'
-    dependency 'javax.xml.bind:jaxb-api:2.3.0'
-    dependency 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+object YAML {
 
-    dependency 'org.snakeyaml:snakeyaml-engine:2.1'
+  private val yaml = Yaml()
 
-    dependencySet(group: 'io.kotest', version: '4.1.3') {
-      entry 'kotest-runner-junit5-jvm'
-      entry 'kotest-runner-console-jvm'
-      entry 'kotest-assertions-core-jvm'
-    }
-  }
+  operator fun invoke() = yaml
 }

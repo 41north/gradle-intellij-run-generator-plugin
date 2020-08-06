@@ -1,0 +1,5 @@
+--- !!dev.north.fortyone.gradle.intellij.run.generator.models.DockerRunConfig
+name: DOCKER | Kafka
+filename: DOCKER__KAFKA.xml
+default: false
+dockerComposeFileName: docker-compose.exflo-kafka.yml
