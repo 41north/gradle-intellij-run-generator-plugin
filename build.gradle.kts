@@ -38,7 +38,6 @@ version = "0.1.2"
 
 repositories {
   jcenter()
-//  maven(url = "http://oss.sonatype.org/content/groups/public/")
 }
 
 gradlePlugin {
@@ -75,7 +74,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.snakeyaml:snakeyaml-engine:2.1")
+  implementation("org.snakeyaml:snakeyaml-engine")
   implementation("org.redundent:kotlin-xml-builder")
   implementation("javax.xml.bind:jaxb-api")
   implementation("com.sun.xml.bind:jaxb-core")

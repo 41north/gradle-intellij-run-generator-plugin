@@ -7,7 +7,7 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 
-class IntellijRunGeneratorTest : FunSpec() {
+class IntellijRunGeneratorTests : FunSpec() {
 
   private val projectDir = createTempDir().apply {
 
@@ -16,15 +16,14 @@ class IntellijRunGeneratorTest : FunSpec() {
     resolve("intellij-run-configs.yaml").apply {
       appendText(
         """
-          |---
-          |application:
-          |  - name: Test
-          |    filename: Test.xml
-          |    default: false
-          |    mainClassName: io.test.Test
-          |    module: io.test.main
-          |    envs:
-          |      BESU_SYNC_MODE: FULL
+          |--- !!dev.north.fortyone.gradle.intellij.run.generator.models.ApplicationRunConfig
+          |name: Test
+          |filename: Test.xml
+          |default: false
+          |mainClassName: io.test.Test
+          |module: io.test.main
+          |envs:
+          |  BESU_SYNC_MODE: FULL
         """.trimMargin()
       )
     }
@@ -44,8 +43,9 @@ class IntellijRunGeneratorTest : FunSpec() {
                       mavenCentral()
                     }
 
-                    `intellij-run-generator` {
+                    intellijRunGenerator {
                       tasksDefinitionsFile.set(File("${parent.absolutePath}/intellij-run-configs.yaml"))
+                      tasksDefinitionOutputDir.set(File("${parent.absolutePath}/outputs"))
                     }
             """
       )

@@ -14,7 +14,7 @@ class YAMLDefinitionParserTests : FunSpec() {
     test("should process correctly an Application definition config") {
       val stream = javaClass.getResource("/application-config.yaml")!!.openStream()
 
-      val config: ApplicationRunConfig = YAML().load(stream)
+      val config = YAML().load(stream) as ApplicationRunConfig
 
       config shouldNotBe null
       with(config) {
@@ -29,7 +29,7 @@ class YAMLDefinitionParserTests : FunSpec() {
     test("should process correctly a Docker definition config") {
       val stream = javaClass.getResource("/docker-config.yaml")!!.openStream()
 
-      val config: DockerRunConfig = YAML().load(stream)
+      val config = YAML().load(stream) as DockerRunConfig
 
       config shouldNotBe null
       with(config) {
@@ -43,7 +43,7 @@ class YAMLDefinitionParserTests : FunSpec() {
     test("should process correctly a Gradle definition config") {
       val stream = javaClass.getResource("/gradle-config.yaml")!!.openStream()
 
-      val config: GradleRunConfig = YAML().load(stream)
+      val config = YAML().load(stream) as GradleRunConfig
 
       config shouldNotBe null
       with(config) {
@@ -65,5 +65,4 @@ class YAMLDefinitionParserTests : FunSpec() {
       }
     }
   }
-
 }

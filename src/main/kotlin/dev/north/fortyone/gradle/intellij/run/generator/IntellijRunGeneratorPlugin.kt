@@ -19,7 +19,6 @@ package dev.north.fortyone.gradle.intellij.run.generator
 import dev.north.fortyone.gradle.intellij.run.generator.tasks.IntellijRunConfiguratorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.create
 import java.io.File
@@ -28,15 +27,17 @@ import java.io.File
 class IntellijRunGeneratorPlugin : Plugin<Project> {
 
   companion object {
-    const val NAME = "intellij-run-generator"
+    const val NAME = "intellijRunGenerator"
     const val TASK_NAME = "generateIntellijRunConfigs"
   }
 
   override fun apply(target: Project) {
     val extension = target.extensions.create<IntellijRunGeneratorExtension>(NAME)
+
     target.registerTask<IntellijRunConfiguratorTask>(TASK_NAME) {
-      tasksDefinitionsFile = extension.tasksDefinitionsFile.get()
-      taskDefinitionsOutput = extension.tasksDefinitionOutputDir.get()
+      tasksDefinitionsFile = extension.tasksDefinitionsFile.orNull
+      taskDefinitionsDir = extension.taskDefinitionsDir.orNull
+      taskDefinitionsOutput = extension.tasksDefinitionOutputDir.orNull
     }
   }
 }
@@ -44,18 +45,20 @@ class IntellijRunGeneratorPlugin : Plugin<Project> {
 /**
  * Extension class for configuring [IntellijRunGeneratorPlugin].
  */
-@Suppress("UnstableApiUsage")
-open class IntellijRunGeneratorExtension internal constructor(
-  objectFactory: ObjectFactory
-) {
+interface IntellijRunGeneratorExtension {
 
   /**
-   * Task definition file for generating Run configs.
+   * Task definition file for generating configs.
    */
-  val tasksDefinitionsFile: Property<File> = objectFactory.property { set(File("./intellij-run-configs.yaml").absoluteFile) }
+  var tasksDefinitionsFile: Property<File>
 
   /**
-   * Output directory where generated Run configs are going to be stored.
+   * Task definition directory for generating configs.
    */
-  val tasksDefinitionOutputDir: Property<File> = objectFactory.property { set(File(".idea/runConfigurations").absoluteFile) }
+  var taskDefinitionsDir: Property<File>
+
+  /**
+   * Output directory where generated configs are stored.
+   */
+  val tasksDefinitionOutputDir: Property<File>
 }

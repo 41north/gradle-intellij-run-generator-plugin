@@ -16,7 +16,7 @@
 
 package dev.north.fortyone.gradle.intellij.run.generator
 
-import org.yaml.snakeyaml.Yaml
+import org.gradle.internal.impldep.org.yaml.snakeyaml.Yaml
 
 object YAML {
 
