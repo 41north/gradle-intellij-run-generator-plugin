@@ -27,7 +27,6 @@ plugins {
   id("com.gradle.plugin-publish") version "0.12.0"
 }
 
-apply(plugin = "io.spring.dependency-management")
 apply(from = "${project.rootDir}/gradle/versions.gradle")
 
 kotlinDslPluginOptions {
@@ -35,7 +34,7 @@ kotlinDslPluginOptions {
 }
 
 group = "dev.north.fortyone.gradle"
-version = "0.1.2"
+version = "0.2.0"
 
 repositories {
   jcenter()
@@ -58,6 +57,12 @@ pluginBundle {
   tags = listOf("intellij", "generator", "kotlin-dsl")
 }
 
+publishing {
+  repositories {
+    maven(url = "build/repository")
+  }
+}
+
 tasks {
   withType<KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "11"
@@ -69,20 +74,12 @@ tasks {
 }
 
 dependencies {
+  implementation("org.yaml:snakeyaml:1.26")
   implementation("org.redundent:kotlin-xml-builder")
-  implementation("com.fasterxml.jackson.core:jackson-databind")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
   implementation("javax.xml.bind:jaxb-api")
   implementation("com.sun.xml.bind:jaxb-core")
 
   testImplementation("io.kotest:kotest-runner-junit5-jvm")
   testImplementation("io.kotest:kotest-runner-console-jvm")
   testImplementation("io.kotest:kotest-assertions-core-jvm")
-}
-
-publishing {
-  repositories {
-    maven(url = "build/repository")
-  }
 }

@@ -19,24 +19,28 @@ package dev.north.fortyone.gradle.intellij.run.generator
 import dev.north.fortyone.gradle.intellij.run.generator.tasks.IntellijRunConfiguratorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.create
 import java.io.File
+import java.io.FilenameFilter
 
 @Suppress("UnstableApiUsage", "MemberVisibilityCanBePrivate")
 class IntellijRunGeneratorPlugin : Plugin<Project> {
 
   companion object {
-    const val NAME = "intellij-run-generator"
+    const val NAME = "intellijRunGenerator"
     const val TASK_NAME = "generateIntellijRunConfigs"
   }
 
   override fun apply(target: Project) {
     val extension = target.extensions.create<IntellijRunGeneratorExtension>(NAME)
+
     target.registerTask<IntellijRunConfiguratorTask>(TASK_NAME) {
-      tasksDefinitionsFile = extension.tasksDefinitionsFile.get()
-      taskDefinitionsOutput = extension.tasksDefinitionOutputDir.get()
+      tasksDefinitions = extension.tasksDefinitions.get()
+      tasksDefinitionsFileExtension = extension.tasksDefinitionsFileExtension
+      taskDefinitionsOutput = extension.tasksDefinitionOutput.get()
     }
   }
 }
@@ -44,18 +48,29 @@ class IntellijRunGeneratorPlugin : Plugin<Project> {
 /**
  * Extension class for configuring [IntellijRunGeneratorPlugin].
  */
-@Suppress("UnstableApiUsage")
-open class IntellijRunGeneratorExtension internal constructor(
-  objectFactory: ObjectFactory
+open class IntellijRunGeneratorExtension(
+  objects: ObjectFactory,
+  projectLayout: ProjectLayout
 ) {
 
   /**
-   * Task definition file for generating Run configs.
+   * Task definition file or directory for generating configs.
    */
-  val tasksDefinitionsFile: Property<File> = objectFactory.property { set(File("./intellij-run-configs.yaml").absoluteFile) }
+  var tasksDefinitions: Property<File> = objects.property {
+    set(File(projectLayout.projectDirectory.asFile, "intellij-run-configs.yaml"))
+  }
 
   /**
-   * Output directory where generated Run configs are going to be stored.
+   * Task definition file filter that allows to filter files.
    */
-  val tasksDefinitionOutputDir: Property<File> = objectFactory.property { set(File(".idea/runConfigurations").absoluteFile) }
+  var tasksDefinitionsFileExtension: FilenameFilter = FilenameFilter { _, name ->
+    name.toLowerCase().endsWith(".yaml") || name.toLowerCase().endsWith(".yml")
+  }
+
+  /**
+   * Output directory where generated configs are stored.
+   */
+  var tasksDefinitionOutput: Property<File> = objects.property {
+    set(File(projectLayout.projectDirectory.asFile, ".idea/runConfigurations"))
+  }
 }
