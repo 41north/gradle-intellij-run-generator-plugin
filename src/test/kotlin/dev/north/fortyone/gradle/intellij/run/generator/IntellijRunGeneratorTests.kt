@@ -46,7 +46,7 @@ class IntellijRunGeneratorTests : FunSpec() {
 
                     intellijRunGenerator {
                       tasksDefinitions.set(File("${parent.absolutePath}/intellij-run-configs.yaml"))
-                      tasksDefinitionOutputDir.set(File("${parent.absolutePath}/outputs"))
+                      tasksDefinitionOutput.set(File("${parent.absolutePath}/outputs"))
                     }
             """
       )

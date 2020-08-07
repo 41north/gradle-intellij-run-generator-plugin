@@ -19,6 +19,7 @@ package dev.north.fortyone.gradle.intellij.run.generator
 import dev.north.fortyone.gradle.intellij.run.generator.tasks.IntellijRunConfiguratorTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.create
 import java.io.File
@@ -48,15 +49,15 @@ class IntellijRunGeneratorPlugin : Plugin<Project> {
 /**
  * Extension class for configuring [IntellijRunGeneratorPlugin].
  */
-interface IntellijRunGeneratorExtension {
+open class IntellijRunGeneratorExtension(objects: ObjectFactory) {
 
   /**
    * Task definition file or directory for generating configs.
    */
-  var tasksDefinitions: Property<File>
+  var tasksDefinitions: Property<File> = objects.property()
 
   /**
    * Output directory where generated configs are stored.
    */
-  val tasksDefinitionOutput: Property<File>
+  var tasksDefinitionOutput: Property<File> = objects.property()
 }

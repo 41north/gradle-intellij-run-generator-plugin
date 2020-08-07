@@ -8,7 +8,6 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
-import java.lang.IllegalStateException
 import java.security.InvalidParameterException
 
 /**
@@ -31,9 +30,9 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
   @TaskAction
   fun run() {
 
-    // Check if is defined
+    // Check if output directory is defined
     if (taskDefinitionsOutput == null)
-      throw IllegalArgumentException("taskDefinitionsOutput is null! Aborting!")
+      throw IllegalArgumentException("taskDefinitionsOutput is null!")
 
     // Ensure output dir exists and create it if necessary
     val outputDir = taskDefinitionsOutput!!.apply { if (!exists()) mkdirs() }
@@ -42,7 +41,8 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
     if (tasksDefinitions == null)
       throw IllegalArgumentException("tasksDefinitionsFile is null! Aborting!")
 
-    // Ensure we comply with requirements
+    // Detect and process depending if tasksDefinitions is a file or a directory
+    val files: List<File?>
     when {
       tasksDefinitions!!.isFile -> {
 
@@ -50,20 +50,7 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
         if (!tasksDefinitions!!.exists())
           throw InvalidParameterException("File with path ${tasksDefinitions!!.absolutePath} not found!")
 
-        // If is not file throw error
-        if (!tasksDefinitions!!.isFile)
-          throw InvalidParameterException("Task definition file ${tasksDefinitions!!.absolutePath} is not a file!")
-
-        // Proceed to parse
-        val isr = tasksDefinitions!!.inputStream()
-        val definitions = YAML().loadAll(isr).iterator()
-
-        // Write definitions
-        definitions
-          .forEach { raw ->
-            val definition = raw as IntellijRunConfig
-            File(outputDir, definition.filename()).writeText(definition.toXml())
-          }
+        files = listOf(tasksDefinitions)
       }
 
       tasksDefinitions!!.isDirectory -> {
@@ -72,30 +59,25 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
         if (!tasksDefinitions!!.exists())
           throw InvalidParameterException("Folder with path ${tasksDefinitions!!.absolutePath} not found!")
 
-        // If is a file throw error
-        if (tasksDefinitions!!.isFile)
-          throw InvalidParameterException("${tasksDefinitions!!.absolutePath} is a file instead of a folder!")
-
         // Obtain files
-        val files = tasksDefinitions!!.listFiles()
+        files = tasksDefinitions!!.listFiles()?.asList() ?: emptyList()
+      }
 
-        if (files == null || files.isEmpty())
-          throw IllegalStateException("${tasksDefinitions!!.absolutePath} is empty!")
+      else -> files = emptyList()
+    }
 
-        // Iterate through files
-        files
-          .forEach {
-            val isr = it!!.inputStream()
-            val definitions = YAML().loadAll(isr).iterator()
+    // Iterate through files
+    files
+      .forEach {
+        // Write definitions
+        val stream = it!!.inputStream()
+        val definitions = YAML().loadAll(stream).iterator()
 
-            // Write definitions
-            definitions
-              .forEach { raw ->
-                val definition = raw as IntellijRunConfig
-                File(outputDir, definition.filename()).writeText(definition.toXml())
-              }
+        definitions
+          .forEach { raw ->
+            val definition = raw as IntellijRunConfig
+            File(outputDir, definition.filename()).writeText(definition.toXml())
           }
       }
-    }
   }
 }

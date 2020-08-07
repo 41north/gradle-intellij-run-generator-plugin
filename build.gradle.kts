@@ -34,7 +34,7 @@ kotlinDslPluginOptions {
 }
 
 group = "dev.north.fortyone.gradle"
-version = "0.1.2"
+version = "0.2.0.SNAPSHOT"
 
 repositories {
   jcenter()
