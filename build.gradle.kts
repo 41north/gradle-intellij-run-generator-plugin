@@ -34,7 +34,7 @@ kotlinDslPluginOptions {
 }
 
 group = "dev.north.fortyone.gradle"
-version = "0.2.0.SNAPSHOT"
+version = "0.2.0"
 
 repositories {
   jcenter()
@@ -74,7 +74,7 @@ tasks {
 }
 
 dependencies {
-  implementation("org.snakeyaml:snakeyaml-engine")
+  implementation("org.yaml:snakeyaml:1.26")
   implementation("org.redundent:kotlin-xml-builder")
   implementation("javax.xml.bind:jaxb-api")
   implementation("com.sun.xml.bind:jaxb-core")

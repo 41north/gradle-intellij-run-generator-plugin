@@ -15,7 +15,11 @@
 
 ## 💡 Introduction
 
-This plugin was developed originally for [Exflo](https://github.com/41north/exflo).
+This plugin allows to specify [Intellij Run configurations](https://www.jetbrains.com/help/idea/run-debug-configuration.html) with YAML!
+
+For now, the scope of the plugin is quite simplistic, but over time new use cases or improvements may be added!
+
+Originally, this plugin was developed for our Besu plugin: [Exflo](https://github.com/41north/exflo) as a way of sharing complex configurations easily.
 
 ## 🙈 Usage
 
@@ -23,20 +27,29 @@ To apply the plugin, use the gradle plugin syntax:
 
 ```kotlin
 plugins {
-  id("dev.north.fortyone.intellij.run.generator") version "0.1.0"
+  id("dev.north.fortyone.intellij.run.generator") version "0.2.0"
 }
 ```
 
 Once the plugin is applied, you can configure it with the following options (default values are displayed below):
 
 ```kotlin
-`intellij-run-generator` {
+intellijRunGenerator {
   tasksDefinitionsFile.set(File("./intellij-run-configs.yaml"))
+  tasksDefinitionsFileExtension = FilenameFilter { _, name -> name.toLowerCase().endsWith(".yaml") || name.toLowerCase().endsWith(".yml") }
   tasksDefinitionOutputDir.set(File(".idea/runConfigurations"))
 }
 ```
 
-If you want to see how the definition file looks like, there's one example taken from Exflo inside [`samples/intellij-run-configs.yaml`](samples/intellij-run-configs.yaml).
+Also you can specify a folder instead of a single definition file, just like this (by default it will load all `*.yaml`, `*.yml` files):
+
+```kotlin
+intellijRunGenerator {
+  tasksDefinitionsFile.set(File("./intellij-run-configs/"))
+}
+```
+
+If you want to see how the definition file looks like, there're some examples inside [`samples/intellij-run-configs.yaml`](samples/intellij-run-configs.yaml).
 
 ## 💻 Contribute
 

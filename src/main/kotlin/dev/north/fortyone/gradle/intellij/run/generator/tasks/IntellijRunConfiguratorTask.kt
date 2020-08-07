@@ -3,11 +3,10 @@ package dev.north.fortyone.gradle.intellij.run.generator.tasks
 import dev.north.fortyone.gradle.intellij.run.generator.YAML
 import dev.north.fortyone.gradle.intellij.run.generator.models.IntellijRunConfig
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+import java.io.FilenameFilter
 import java.security.InvalidParameterException
 
 /**
@@ -15,12 +14,12 @@ import java.security.InvalidParameterException
  */
 open class IntellijRunConfiguratorTask : DefaultTask() {
 
-  @InputFile
-  @InputDirectory
-  var tasksDefinitions: File? = null
+  lateinit var tasksDefinitions: File
+
+  lateinit var tasksDefinitionsFileExtension: FilenameFilter
 
   @OutputDirectory
-  var taskDefinitionsOutput: File? = null
+  lateinit var taskDefinitionsOutput: File
 
   init {
     group = "Intellij"
@@ -30,53 +29,36 @@ open class IntellijRunConfiguratorTask : DefaultTask() {
   @TaskAction
   fun run() {
 
-    // Check if output directory is defined
-    if (taskDefinitionsOutput == null)
-      throw IllegalArgumentException("taskDefinitionsOutput is null!")
+    // Ensure output dir exists (or create it if necessary)
+    taskDefinitionsOutput.apply { if (!exists()) mkdirs() }
 
-    // Ensure output dir exists and create it if necessary
-    val outputDir = taskDefinitionsOutput!!.apply { if (!exists()) mkdirs() }
-
-    // Ensure at least we have a definition file or a definition dir
-    if (tasksDefinitions == null)
-      throw IllegalArgumentException("tasksDefinitionsFile is null! Aborting!")
+    // If doesn't exist, throw error
+    if (!tasksDefinitions.exists())
+      throw InvalidParameterException("File or path ${tasksDefinitions.absolutePath} not found!")
 
     // Detect and process depending if tasksDefinitions is a file or a directory
-    val files: List<File?>
-    when {
-      tasksDefinitions!!.isFile -> {
-
-        // If doesn't exist, throw error
-        if (!tasksDefinitions!!.exists())
-          throw InvalidParameterException("File with path ${tasksDefinitions!!.absolutePath} not found!")
-
-        files = listOf(tasksDefinitions)
-      }
-
-      tasksDefinitions!!.isDirectory -> {
-
-        // If doesn't exist, throw error
-        if (!tasksDefinitions!!.exists())
-          throw InvalidParameterException("Folder with path ${tasksDefinitions!!.absolutePath} not found!")
-
-        // Obtain files
-        files = tasksDefinitions!!.listFiles()?.asList() ?: emptyList()
-      }
-
-      else -> files = emptyList()
+    val files: List<File?> = when {
+      tasksDefinitions.isFile -> listOf(tasksDefinitions)
+      tasksDefinitions.isDirectory -> tasksDefinitions.listFiles(tasksDefinitionsFileExtension)?.asList() ?: emptyList()
+      else -> emptyList()
     }
+
+    logger.info("Run config files to be processed: $files")
 
     // Iterate through files
     files
-      .forEach {
-        // Write definitions
-        val stream = it!!.inputStream()
-        val definitions = YAML().loadAll(stream).iterator()
+      .filterNotNull()
+      .forEach { file ->
+        logger.info("Processing run config file: ${file.absolutePath}")
 
-        definitions
+        YAML()
+          .loadAll(file.inputStream())
+          .iterator()
           .forEach { raw ->
-            val definition = raw as IntellijRunConfig
-            File(outputDir, definition.filename()).writeText(definition.toXml())
+            val runConfig = raw as IntellijRunConfig
+            File(taskDefinitionsOutput, runConfig.filename())
+              .apply { writeText(runConfig.toXml()) }
+              .also { logger.info("Run config file stored in: ${it.absolutePath}") }
           }
       }
   }

@@ -19,8 +19,6 @@
 dependencyManagement {
   dependencies {
 
-    dependency 'org.snakeyaml:snakeyaml-engine:2.1'
-
     dependency 'org.redundent:kotlin-xml-builder:1.6.0'
     dependency 'javax.xml.bind:jaxb-api:2.3.0'
     dependency 'com.sun.xml.bind:jaxb-core:2.3.0.1'
